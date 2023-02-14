@@ -1,35 +1,45 @@
-const config = require("./config")
+const config = require("./config.js")
 const request = require('request');
 const cheerio = require("cheerio");
 const { Client, Events, GatewayIntentBits,EmbedBuilder  } = require('discord.js');
-
+const moment = require("moment")
+moment.locale("tr-TR")
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.once(Events.ClientReady,async c => {
-  
+  setInterval(async () => {
+
+    const activities = ["Depremler ile","Deprem Bilgi","Cyber Botlar ile"]
+    const random = activities[
+      Math.floor(Math.random() * activities.length)];
+   // client.user.setActivity(`${random}`)
+  }, 16000);
 client.user.setStatus("dnd")
 	console.log(`${c.user.tag} online!`);
     let a = await getirDepremler()   
 let last = a[0]
-console.log(last)
+console.log(last || "DEPREM YOK")
 setInterval(async () => {
     let x1 = await getirDepremler()   
     if(!x1)return
-    if(x1 === undefined)return
-//    if(x1[0].timestamp === undefined)return
+    if(x1 == undefined)return
+  //  if(x1[0].timestamp == undefined)return
+   if(x1[0] == undefined)return
 console.log(x1[0])
-if(last.timestamp >= x1[0].timestamp)return
+//if(last.timestamp >= x1[0].timestamp)return
+  if (!x1[0]) return
 last = x1[0]
     let b = last.sehir
     if(!b.startsWith("("))b = ""
 let buyuklukEmoji
-if(Number(last.buyukluk) < 10.0)buyuklukEmoji="🔴"
-if(Number(last.buyukluk) < 6.0)buyuklukEmoji="🟡"
+if(Number(last.buyukluk) > 7.0)buyuklukEmoji="🔴"
+if(Number(last.buyukluk) < 5.0)buyuklukEmoji="🟡"
 if(Number(last.buyukluk) < 4.0)buyuklukEmoji="🟢"
 
     const depremEmbed = new EmbedBuilder()
 	.setColor("BLACK")
+    .setTimestamp()
     .setThumbnail(client.user.avatarURL())
-    .setFooter('Depremden etkilenen herkese geçmiş olsun...', client.user.avatarURL())
+//    .setFooter('Depremden etkilenen herkese geçmiş olsun...', client.user.avatarURL())
 	.setTitle('Yeni Deprem!')
 	.setURL('http://www.koeri.boun.edu.tr/scripts/lst0.asp')
     .setDescription("**"+last.yer+" "+b+"**")
@@ -39,7 +49,7 @@ if(Number(last.buyukluk) < 4.0)buyuklukEmoji="🟢"
         { name: 'Tarih', value: "<t:"+last.timestamp+":f> (<t:"+last.timestamp+":R>)" },
 	)
 
-client.channels.cache.get(config.kanalId).send({embeds:[depremEmbed]})
+client.channels.cache.get(config.kanalId).send({embeds:[depremEmbed],content:"<@&1074595887738802297>"})
 
 }, 1*60000);
 
@@ -77,7 +87,7 @@ async function getirDepremler() {
                     }
                 }
 
-                var tarih = depremBilgi[0];
+            var tarih = depremBilgi[0];
                 var saat = depremBilgi[1];
                 var enlem = depremBilgi[2];
                 var boylam = depremBilgi[3];
@@ -85,13 +95,15 @@ async function getirDepremler() {
                 var buyukluk = depremBilgi[6];
                 var yer = depremBilgi[8];
                 let sehir = depremBilgi[9]
-                let timestamp =  Date.parse(tarih+" "+saat) / 1000
+               let timestamp =  /*Date.parse(tarih+" "+saat) / 1000*//*Math.floor(tarih+" "+saat / 1000)*/Date.parse(tarih+" "+saat+" GMT+3") / 1000
+
+
 
                 var deprem = new Deprem(tarih, saat, timestamp, enlem, boylam, derinlik, buyukluk, yer, sehir);
                 depremler.push(deprem);
             });
             
-            //console.log("Deprem Tarama Islemi Tamamlandi. Deprem Sayisi : " + depremler.length);
+            console.log("Deprem Tarama Islemi Tamamlandi. Deprem Sayisi : " + depremler.length);
             a = true
         }
     })
@@ -106,4 +118,4 @@ async function getirDepremler() {
 
 
 
-client.login(config.token);
+client.login(process.env.TOKEN);
