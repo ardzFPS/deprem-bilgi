@@ -118,4 +118,4 @@ async function getirDepremler() {
 
 
 
-client.login(process.env.TOKEN);
+client.login(config.token);
