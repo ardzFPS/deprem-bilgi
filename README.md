@@ -18,4 +18,4 @@
 <img src="https://github-profile-trophy.vercel.app/?username=ardzFPS&theme=onedark" />
   
   
- [!]This is the source code of [Mybutton Community](https://discord.gg/caAYsvTjsW) Earthquake İnformation Bot
+ **[!]This is the source code of [Mybutton Community](https://discord.gg/caAYsvTjsW) Earthquake İnformation Bot**
